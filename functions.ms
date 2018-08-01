@@ -5,13 +5,13 @@ struct functions
 	  	result = #()
 	  	case toIndex of
 	  	(
-	  		(-1):
+	  		0:
 	  		(
 	  			for item in insAr do append result item
 	  			for i = 1 to insAr.count where (index = finditem originalAr insAr[i]) != 0 do deleteItem originalAr index
 	  			for item in originalAr do append result item
 	  		)
-	  		0:
+	  		(-1):
 	  		(
 	  			for i = 1 to insAr.count where (index = finditem originalAr insAr[i]) != 0 do deleteItem originalAr index
 	  			for item in originalAr do append result item
@@ -20,10 +20,11 @@ struct functions
 	  		default:
 	  		(
 	  			local secondAr = #()
-	  			for i = 1 to (toIndex + 1) do append result originalAr[i]
-	  			for i = (toIndex + 2) to originalAr.count do append secondAr originalAr[i]
+	  			for i = 1 to (toIndex ) do append result originalAr[i]
+	  			for i = (toIndex + 1) to originalAr.count do append secondAr originalAr[i]
 	  			for i = 1 to insAr.count where (index = finditem result insAr[i]) != 0 do deleteItem result index
 	  			for i = 1 to insAr.count where (index = finditem secondAr insAr[i]) != 0 do deleteItem secondAr index
+				for item in insAr do append result item
 	  			join result secondAr
 	  		)
 	  	)
