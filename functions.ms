@@ -5,7 +5,7 @@ struct functions
 	  	result = #()
 	  	case toIndex of
 	  	(
-	  		-1:
+	  		(-1):
 	  		(
 	  			for item in insAr do append result item
 	  			for i = 1 to insAr.count where (index = finditem originalAr insAr[i]) != 0 do deleteItem originalAr index
@@ -32,20 +32,18 @@ struct functions
 
 	fn exportSelectedNodesToObj =
 	(
-	  	fn exportNode nd fp =
+		fn exportNode nd fp suffix:"_highPoly"=
 		(
-			if isValidNode nd do
-			(
-				fileName = fp + @"\" + nd.name + ".obj"
-				select nd
-				exportFile fileName #noPrompt selectedOnly:true using:ObjExp
-			)
+			fileName = fp + @"\" + nd.name + suffix + ".obj"
+			select nd
+			exportFile fileName #noPrompt selectedOnly:true using:OBJExp
 		)
-		filePath = getSavePath caption:"Select Folder for Exporting .obj" initialDir:"$export"
+		filePath = getSavePath caption:"Select Folder for Exporting .obj" initialDir:(getDir #export)
 		disableSceneRedraw()
 		ar = selection as array
 		for o in ar do exportNode o filePath
 		select ar
 		enableSceneRedraw()
+		messageBox "Operation Completed" title:"Success"
 	)
 )
