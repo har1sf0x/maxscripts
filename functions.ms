@@ -10,6 +10,8 @@ insertItemsToIndex originalAr insAr toIndex --helper fn for .net ListBox (toInde
 exportSelectedNodesToObj suffix:'' --it exports all selected nodes to different .obj files addind suffix
 nameBonesRollout --rollout for UI_NameBones
 UI_NameBones --UI for renaming bones of human character (Pelvis,Spine0...-Neck-Head-nub,Clavicle-Shoulder-Elbow-nub,Thigh-Knee-Ankle-Toes)
+createRigForearmRollBones sel count:2 --create and rig Forearm roll bones. sel must be #(forearm, hand)
+runCreateRigForearmRollBones count:2 --an other way to createRigForearmRollBones by picking object on site
 "
 	print txt
 	),
