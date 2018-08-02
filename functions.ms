@@ -1,7 +1,21 @@
 struct functions
 (
+	fn info =
+	(
+	txt = "created by har1sf0x, 01/Aug/2018
+		contains usefull functions for various purposes
+		info --prints info about the struct
+		insertItemsToIndex originalAr insAr toIndex --helper fn for .net ListBox (toIndex is 0-based)
+		exportSelectedNodesToObj suffix:"" --it exports all selected nodes to different .obj files addind suffix
+		nameBonesRollout --rollout for UI_NameBones
+		UI_NameBones --UI for renaming bones of human character (Pelvis,Spine0...-Neck-Head-nub,Clavicle-Shoulder-Elbow-nub,Thigh-Knee-Ankle-Toes)
+		"
+	print txt
+	),
+
 	fn insertItemsToIndex originalAr insAr toIndex =
 	(
+		setWaitCursor()
 	  	result = #()
 	  	case toIndex of
 	  	(
@@ -28,10 +42,11 @@ struct functions
 	  			join result secondAr
 	  		)
 	  	)
+	  	setArrowCursor()
 	  	return result
 	),
 
-	fn exportSelectedNodesToObj =
+	fn exportSelectedNodesToObj suffix:"" =
 	(
 		fn exportNode nd fp suffix:"_highPoly"=
 		(
@@ -40,11 +55,99 @@ struct functions
 			exportFile fileName #noPrompt selectedOnly:true using:OBJExp
 		)
 		filePath = getSavePath caption:"Select Folder for Exporting .obj" initialDir:(getDir #export)
+		setWaitCursor()
 		disableSceneRedraw()
 		ar = selection as array
-		for o in ar do exportNode o filePath
+		for o in ar do exportNode o filePath suffix:suffix
 		select ar
 		enableSceneRedraw()
+		setArrowCursor()
 		messageBox "Operation Completed" title:"Success"
+	),
+
+	nameBonesRollout = rollout nameBonesRollout "Name Bones"
+	(
+		editText edt_CharacterName "Character Name:"
+		dropDownList ddl_BodyPart "Body Part:" items:#("Pelvis", "Spine-Neck-Head", "Clavicle-Arm", "Leg", "Finger")
+		editText edt_FingerName "Finger Name:" enabled:false across:2
+		checkBox ckb_HasMetacarpus "Has Metacarpus?" enabled:false
+		on ddl_BodyPart changed do edt_FingerName.enabled = ckb_HasMetacarpus.enabled = (ddl_BodyPart.selected == "Finger")
+		dropDownList ddl_Side "Side:" items:#("c", "rt", "lt")
+		button btn_Rename "Rename..."
+
+		on btn_Rename pressed do
+		(
+			setWaitCursor()
+			if selection.count == 0 do
+			(
+				messageBox "Please select the bone chain that you want to rename." title:"Warning..."
+				setArrowCursor()
+				return false
+			)
+			bonesAr = selection as array
+			case ddl_BodyPart.selection of
+			(
+				1: bonesAr[1].name = edt_CharacterName.text + "::"+"Pelvis"+"_"+ddl_Side.selected+"_bn"
+				2:
+				(
+					if bonesAr.count < 4 do
+					(
+						messageBox "The spine needs at least 4 bones. Action aborted." title:"Warning..."
+						setArrowCursor()
+						return false
+					)
+					for i = 1 to bonesAr.count-3 do bonesAr[i].name = edt_CharacterName.text + "::"+"Spine0"+(i as string)+"_"+ddl_Side.selected+"_bn"
+					bonesAr[count-2].name = edt_CharacterName.text + "::"+"Neck"+"_"+ddl_Side.selected+"_bn"
+					bonesAr[count-1].name = edt_CharacterName.text + "::"+"Head"+"_"+ddl_Side.selected+"_bn"
+					bonesAr[count].name = edt_CharacterName.text + "::"+"Head"+"_"+ddl_Side.selected+"_nub"
+				)
+				3:
+				(
+					if bonesAr.count != 4 do
+					(
+						messageBox "The Arm needs 4 bones. Action aborted." title:"Warning..."
+						setArrowCursor()
+						return false
+					)
+					boneNames = #("Clavicle", "Shoulder", "Elbow", "Hand")
+					for i = 1 to 3 do bonesAr[i].name = edt_CharacterName.text + "::"+boneNames[i]+"_"+ddl_Side.selected+"_bn"
+					bonesAr[4].name = edt_CharacterName.text + "::"+boneNames[4]+"_"+ddl_Side.selected+"_nub"
+				)
+				4:
+				(
+					if bonesAr.count != 5 do
+					(
+						messageBox "The Leg needs 5 bones. Action aborted." title:"Warning..."
+						setArrowCursor()
+						return false
+					)
+					boneNames = #("Thigh", "Knee", "Ankle", "Toes", "Leg")
+					for i = 1 to 4 do bonesAr[i].name = edt_CharacterName.text + "::"+boneNames[i]+"_"+ddl_Side.selected+"_bn"
+					bonesAr[5].name = edt_CharacterName.text + "::"+boneNames[5]+"_"+ddl_Side.selected+"_nub"
+				)
+				5:
+				(
+					testVar = if ckb_HasMetacarpus.checked then 5 else 4
+					if bonesAr.count != testVar do
+					(
+						messageBox "The Leg needs 5 bones. Action aborted." title:"Warning..."
+						setArrowCursor()
+						return false
+					)
+					startIndex = if ckb_HasMetacarpus.checked then 0 else 1
+					for i = startIndex to bonesAr.count - 1 do bonesAr[i].name = edt_CharacterName.text + "::"+edt_FingerName.text+"0"+(i as string)+"_"+ddl_Side.selected+"_bn"
+					bonesAr[bonesAr.count].name = edt_CharacterName.text + "::"+edt_FingerName.text+"_"+ddl_Side.selected+"_nub"
+				)
+			)
+-- 			bnName = edt_CharacterName.text + "::"+"put_the_bodyPart_var_here"+"_"+ddl_Side.selected+"_bn"
+			setArrowCursor()
+			return true
+		)
+	),
+
+	fn UI_NameBones =
+	(
+		try(destroyDialog nameBonesRollout)catch()
+		createDialog nameBonesRollout
 	)
 )
