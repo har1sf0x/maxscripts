@@ -156,5 +156,46 @@ UI_NameBones --UI for renaming bones of human character (Pelvis,Spine0...-Neck-H
 	(
 		try(destroyDialog nameBonesRollout)catch()
 		createDialog nameBonesRollout width:500
+	),
+
+	fn createRigForearmRollBones sel count:2 =
+	(
+		if classof sel != array or sel.count != 2 or classof sel[1] != BoneGeometry or classof sel[2] != BoneGeometry do
+		(
+			messageBox "Please pass an array of type #(forearm, hand). Action aborted." title:"Warning..."
+			return false
+		)
+		setWaitCursor()
+		bn = sel[1]
+		hand = sel[2]
+		rollBones = #()
+		for i = 1 to count do
+		(
+			roll = copy bn
+			roll.name = (trimright bn.name "bn") + "roll0" + (i as string) + "_bn"
+			roll.parent = bn
+			roll.length = (bn.length * 1/(count + 1))
+			tm = bn.transform
+			tm.position = bn.pos + (i * roll.length) * bn.transform.row1
+			roll.transform = tm
+			append rollBones roll
+		)
+
+
+		setArrowCursor()
+		return true
+	),
+
+	fn runCreateRigForearmRollBones count:2 =
+	(
+		fn pickBone o = (classof o == BoneGeometry)
+		sel = pickObject message:"Please pick the forearm and the hand." filter:pickBone count:2
+		if sel == array or sel.count != 2 do
+		(
+			messageBox "Please pick the forearm and the hand. Action aborted." title:"Warning..."
+			return false
+		)
+		createRigForearmRollBones sel count:count
+		return true
 	)
 )
