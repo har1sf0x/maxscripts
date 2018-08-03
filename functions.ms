@@ -102,7 +102,7 @@ createRigShoulderRollBones bn count:1 --create and rig Shoulder roll bones.
 				(
 					if bonesAr.count < 4 do
 					(
-						messageBox "The spine needs at least 4 bones. Action aborted." title:"Warning..."
+						messageBox "The v2 spine needs at least 4 bones. Action aborted." title:"Warning..."
 						setArrowCursor()
 						return false
 					)
@@ -113,21 +113,21 @@ createRigShoulderRollBones bn count:1 --create and rig Shoulder roll bones.
 				)
 				3:
 				(
-					if bonesAr.count != 5 do
+					if bonesAr.count != 6 do
 					(
-						messageBox "The Leg needs 5 bones. Action aborted." title:"Warning..."
+						messageBox "The v2 Leg needs 6 bones. Action aborted." title:"Warning..."
 						setArrowCursor()
 						return false
 					)
-					boneNames = #("Thigh", "Knee", "Ankle", "Toes", "Leg")
-					for i = 1 to 4 do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_bn"
-					bonesAr[5].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[5]+"_"+ddl_Side.selected+"_nub"
+					boneNames = #("Thigh", "Knee", "Leg", "Ankle", "Toes", "Toes")
+					for i in #(1, 2, 4, 5) do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_bn"
+					for i in #(3, 6) do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_nub"
 				)
 				4:
 				(
 					if bonesAr.count != 4 do
 					(
-						messageBox "The Arm needs 4 bones. Action aborted." title:"Warning..."
+						messageBox "The v2 Arm needs 4 bones. Action aborted." title:"Warning..."
 						setArrowCursor()
 						return false
 					)
