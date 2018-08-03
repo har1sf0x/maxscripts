@@ -200,8 +200,8 @@ createRigShoulderRollBones bn count:1 --create and rig Shoulder roll bones.
 		(
 			contro = orientation_constraint()
 			rollBones[i].transform.controller[2].controller = contro
-			contro.appendTarget bn (1.0 - (i*(1.0/count)))
-			contro.appendTarget rollBones[count] (i*(1.0/count))
+			contro.appendTarget bn (100*(1.0 - (i*(1.0/count))))
+			contro.appendTarget rollBones[count] (100*i*(1.0/count))
 		)
 		(
 			contro = lookAt_constraint()
@@ -257,8 +257,8 @@ createRigShoulderRollBones bn count:1 --create and rig Shoulder roll bones.
 		(
 			contro = orientation_constraint()
 			rollBones[i].transform.controller[2].controller = contro
-			contro.appendTarget rollBones[1] (1.0 - (i-1)*(1.0/count))
-			contro.appendTarget bn ((i-1)*(1.0/count))
+			contro.appendTarget rollBones[1] (100*(1.0 - (i-1)*(1.0/count)))
+			contro.appendTarget bn (100*(i-1)*(1.0/count))
 		)
 		(
 			pt = point name:((trimright bn.name "bn") + "pt") size:(2*(amax #(bn.height,bn.width))) box:true axistipod:false cross:false centermarker:false wirecolor:green
