@@ -12,6 +12,7 @@ nameBonesRollout --rollout for UI_NameBones
 UI_NameBones --UI for renaming bones of human character (Pelvis,Spine0...-Neck-Head-nub,Clavicle-Shoulder-Elbow-nub,Thigh-Knee-Ankle-Toes)
 createRigForearmRollBones sel count:2 --create and rig Forearm roll bones. sel must be #(forearm, hand)
 runCreateRigForearmRollBones count:2 --an other way to createRigForearmRollBones by picking object on site
+createRigShoulderRollBones bn count:1 --create and rig Shoulder roll bones.
 "
 	print txt
 	),
@@ -176,14 +177,31 @@ runCreateRigForearmRollBones count:2 --an other way to createRigForearmRollBones
 			roll = copy bn
 			roll.name = (trimright bn.name "bn") + "roll0" + (i as string) + "_bn"
 			roll.parent = bn
-			roll.length = (bn.length * 1/(count + 1))
+			roll.length = (bn.length * 1.0/(count + 1))
 			tm = bn.transform
 			tm.position = bn.pos + (i * roll.length) * bn.transform.row1
 			roll.transform = tm
 			append rollBones roll
 		)
-
-
+		for i = 1 to (count - 1) do
+		(
+			contro = orientation_constraint()
+			rollBones[i].transform.controller[2].controller = contro
+			contro.appendTarget bn (1.0 - (i*(1.0/count)))
+			contro.appendTarget rollBones[count] (i*(1.0/count))
+		)
+		(
+			contro = lookAt_constraint()
+			rollBones[count].transform.controller[2].controller = contro
+			contro.lookat_vector_length = 0.0
+			contro.appendTarget bn 1.0
+			contro.target_axis = 0
+			contro.target_axisFlip = true
+			contro.pickUpNode = hand
+			contro.upnode_world = false
+			contro.StoUP_axis = 1
+			contro.upnode_axis = 1
+		)
 		setArrowCursor()
 		return true
 	),
@@ -198,6 +216,48 @@ runCreateRigForearmRollBones count:2 --an other way to createRigForearmRollBones
 			return false
 		)
 		createRigForearmRollBones sel count:count
+		return true
+	),
+
+	fn createRigShoulderRollBones bn count:1 =
+	(
+		if classof bn != BoneGeometry or bn.parent == undefined do
+		(
+			messageBox "Please pass the shoulder bone. Action aborted." title:"Warning..."
+			return false
+		)
+		setWaitCursor()
+		rollBones = #()
+		for i = 1 to count do
+		(
+			roll = copy bn
+			roll.name = (trimright bn.name "bn") + "roll0" + (i as string) + "_bn"
+			roll.parent = bn
+			roll.length = (bn.length * 1.0/(count + 1))
+			tm = bn.transform
+			tm.position = bn.pos + ((i-1) * roll.length) * bn.transform.row1
+			roll.transform = tm
+			append rollBones roll
+		)
+		for i = 2 to count do
+		(
+			contro = orientation_constraint()
+			rollBones[i].transform.controller[2].controller = contro
+			contro.appendTarget rollBones[1] (1.0 - (i-1)*(1.0/count))
+			contro.appendTarget bn ((i-1)*(1.0/count))
+		)
+		pt = point name:((trimright bn.name "bn") + "pt") size:(amax #(bn.height,bn.width)) box:true axistipod:false cross:false centermarker:false
+		pt.transform = bn.transform
+		pt.parent = bn.parent
+		(
+			contrto = float_script()
+			pt.transform.controller[2].controller[1].controller
+			contro.addTarget "pt" pt.transform
+			contro.addTarget "bn" bn.transform
+			txt = "rot = (bn * inverse pt).rotation as eulerAngles\ndegToRad -rot.x"
+			contro.script = txt
+		)
+		setArrowCursor()
 		return true
 	)
 )
