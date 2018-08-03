@@ -72,7 +72,7 @@ createRigShoulderRollBones bn count:1 --create and rig Shoulder roll bones.
 	nameBonesRollout = rollout nameBonesRollout "Name Bones"
 	(
 		editText edt_CharacterName "Character Name:"
-		dropDownList ddl_BodyPart "Body Part:" items:#("Pelvis", "Spine-Neck-Head", "Leg", "Clavicle-Arm", "Hand", "Finger") width:120
+		dropDownList ddl_BodyPart "Body Part:" items:#("Pelvis", "Spine-Neck-Head", "Leg", "Arm", "Finger") width:120
 		editText edt_FingerName "Finger Name:" enabled:false across:2
 		checkBox ckb_HasMetacarpus "Has Metacarpus?" enabled:false
 		dropDownList ddl_Side "Side:" items:#("rt", "lt") enabled:false width:50
@@ -80,7 +80,7 @@ createRigShoulderRollBones bn count:1 --create and rig Shoulder roll bones.
 		on ddl_BodyPart selected arg do
 		(
 			edt_FingerName.enabled = ckb_HasMetacarpus.enabled = (ddl_BodyPart.selected == "Finger")
-			ddl_Side.enabled = (ddl_BodyPart.selected == "Leg" or ddl_BodyPart.selected == "Clavicle-Arm" or ddl_BodyPart.selected == "Hand" or ddl_BodyPart.selected == "Finger")
+			ddl_Side.enabled = (ddl_BodyPart.selected == "Leg" or ddl_BodyPart.selected == "Arm" or ddl_BodyPart.selected == "Finger")
 		)
 		
 		button btn_Rename "Rename..."
@@ -97,12 +97,22 @@ createRigShoulderRollBones bn count:1 --create and rig Shoulder roll bones.
 			bonesAr = selection as array
 			case ddl_BodyPart.selection of
 			(
-				1: bonesAr[1].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"Pelvis"+"_"+"_bn"
+				1:
+				(
+					if bonesAr.count != 2 do
+					(
+						messageBox "The v2 Pelvis needs 2 bones. Action aborted." title:"Warning..."
+						setArrowCursor()
+						return false
+					)
+					bonesAr[1].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"Pelvis"+"_"+"_bn"
+					bonesAr[2].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"Pelvis"+"_"+"_nub"
+				)
 				2:
 				(
 					if bonesAr.count < 4 do
 					(
-						messageBox "The v2 spine needs at least 4 bones. Action aborted." title:"Warning..."
+						messageBox "The v2 Spine needs at least 4 bones. Action aborted." title:"Warning..."
 						setArrowCursor()
 						return false
 					)
@@ -125,34 +135,22 @@ createRigShoulderRollBones bn count:1 --create and rig Shoulder roll bones.
 				)
 				4:
 				(
-					if bonesAr.count != 4 do
+					if bonesAr.count != 6 do
 					(
-						messageBox "The v2 Arm needs 4 bones. Action aborted." title:"Warning..."
+						messageBox "The v2 Arm needs 6 bones. Action aborted." title:"Warning..."
 						setArrowCursor()
 						return false
 					)
-					boneNames = #("Clavicle", "Shoulder", "Elbow", "Arm")
-					for i = 1 to 3 do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_bn"
-					bonesAr[4].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[4]+"_"+ddl_Side.selected+"_nub"
+					boneNames = #("Clavicle", "Shoulder", "Elbow", "Arm", "Hand", "Hand")
+					for i in #(1, 2, 3, 5) do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_bn"
+					for i in #(4, 6) do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_nub"
 				)
 				5:
-				(
-					
-					if bonesAr.count != 2 do
-					(
-						messageBox "The Hand needs 2 bones. Action aborted." title:"Warning..."
-						setArrowCursor()
-						return false
-					)
-					bonesAr[1].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"Hand"+"_"+ddl_Side.selected+"_bn"
-					bonesAr[2].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"Hand"+"_"+ddl_Side.selected+"_nub"
-				)
-				6:
 				(
 					bonesCount = if ckb_HasMetacarpus.checked then 5 else 4
 					if bonesAr.count != bonesCount do
 					(
-						messageBox ("The finger needs " + (testVar as string) + " bones. Action aborted.") title:"Warning..."
+						messageBox ("The finger needs " + (bonesCount as string) + " bones. Action aborted.") title:"Warning..."
 						setArrowCursor()
 						return false
 					)
