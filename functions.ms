@@ -72,7 +72,7 @@ createRigShoulderRollBones bn count:1 --create and rig Shoulder roll bones.
 	nameBonesRollout = rollout nameBonesRollout "Name Bones"
 	(
 		editText edt_CharacterName "Character Name:"
-		dropDownList ddl_BodyPart "Body Part:" items:#("Pelvis", "Spine-Neck-Head", "Clavicle-Arm", "Leg", "Finger") width:120
+		dropDownList ddl_BodyPart "Body Part:" items:#("Pelvis", "Spine-Neck-Head", "Leg", "Clavicle-Arm", "Hand", "Finger") width:120
 		editText edt_FingerName "Finger Name:" enabled:false across:2
 		checkBox ckb_HasMetacarpus "Has Metacarpus?" enabled:false
 		dropDownList ddl_Side "Side:" items:#("rt", "lt") enabled:false width:50
@@ -80,7 +80,7 @@ createRigShoulderRollBones bn count:1 --create and rig Shoulder roll bones.
 		on ddl_BodyPart selected arg do
 		(
 			edt_FingerName.enabled = ckb_HasMetacarpus.enabled = (ddl_BodyPart.selected == "Finger")
-			ddl_Side.enabled = (ddl_BodyPart.selected == "Clavicle-Arm" or ddl_BodyPart.selected == "Leg" or ddl_BodyPart.selected == "Finger")
+			ddl_Side.enabled = (ddl_BodyPart.selected == "Leg" or ddl_BodyPart.selected == "Clavicle-Arm" or ddl_BodyPart.selected == "Hand" or ddl_BodyPart.selected == "Finger")
 		)
 		
 		button btn_Rename "Rename..."
@@ -113,18 +113,6 @@ createRigShoulderRollBones bn count:1 --create and rig Shoulder roll bones.
 				)
 				3:
 				(
-					if bonesAr.count != 4 do
-					(
-						messageBox "The Arm needs 4 bones. Action aborted." title:"Warning..."
-						setArrowCursor()
-						return false
-					)
-					boneNames = #("Clavicle", "Shoulder", "Elbow", "Arm")
-					for i = 1 to 3 do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_bn"
-					bonesAr[4].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[4]+"_"+ddl_Side.selected+"_nub"
-				)
-				4:
-				(
 					if bonesAr.count != 5 do
 					(
 						messageBox "The Leg needs 5 bones. Action aborted." title:"Warning..."
@@ -135,10 +123,34 @@ createRigShoulderRollBones bn count:1 --create and rig Shoulder roll bones.
 					for i = 1 to 4 do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_bn"
 					bonesAr[5].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[5]+"_"+ddl_Side.selected+"_nub"
 				)
+				4:
+				(
+					if bonesAr.count != 4 do
+					(
+						messageBox "The Arm needs 4 bones. Action aborted." title:"Warning..."
+						setArrowCursor()
+						return false
+					)
+					boneNames = #("Clavicle", "Shoulder", "Elbow", "Arm")
+					for i = 1 to 3 do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_bn"
+					bonesAr[4].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[4]+"_"+ddl_Side.selected+"_nub"
+				)
 				5:
 				(
-					testVar = if ckb_HasMetacarpus.checked then 5 else 4
-					if bonesAr.count != testVar do
+					
+					if bonesAr.count != 2 do
+					(
+						messageBox "The Hand needs 2 bones. Action aborted." title:"Warning..."
+						setArrowCursor()
+						return false
+					)
+					bonesAr[1].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"Hand"+"_"+ddl_Side.selected+"_bn"
+					bonesAr[2].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"Hand"+"_"+ddl_Side.selected+"_nub"
+				)
+				6:
+				(
+					bonesCount = if ckb_HasMetacarpus.checked then 5 else 4
+					if bonesAr.count != bonesCount do
 					(
 						messageBox ("The finger needs " + (testVar as string) + " bones. Action aborted.") title:"Warning..."
 						setArrowCursor()
@@ -175,6 +187,7 @@ createRigShoulderRollBones bn count:1 --create and rig Shoulder roll bones.
 		for i = 1 to count do
 		(
 			roll = copy bn
+			roll.wirecolor = bn.wirecolor
 			roll.name = (trimright bn.name "bn") + "roll0" + (i as string) + "_bn"
 			roll.parent = bn
 			roll.length = (bn.length * 1.0/(count + 1))
@@ -231,6 +244,7 @@ createRigShoulderRollBones bn count:1 --create and rig Shoulder roll bones.
 		for i = 1 to count do
 		(
 			roll = copy bn
+			roll.wirecolor = bn.wirecolor
 			roll.name = (trimright bn.name "bn") + "roll0" + (i as string) + "_bn"
 			roll.parent = bn
 			roll.length = (bn.length * 1.0/(count + 1))
@@ -246,15 +260,15 @@ createRigShoulderRollBones bn count:1 --create and rig Shoulder roll bones.
 			contro.appendTarget rollBones[1] (1.0 - (i-1)*(1.0/count))
 			contro.appendTarget bn ((i-1)*(1.0/count))
 		)
-		pt = point name:((trimright bn.name "bn") + "pt") size:(amax #(bn.height,bn.width)) box:true axistipod:false cross:false centermarker:false
-		pt.transform = bn.transform
-		pt.parent = bn.parent
 		(
-			contrto = float_script()
-			pt.transform.controller[2].controller[1].controller
-			contro.addTarget "pt" pt.transform
-			contro.addTarget "bn" bn.transform
-			txt = "rot = (bn * inverse pt).rotation as eulerAngles\ndegToRad -rot.x"
+			pt = point name:((trimright bn.name "bn") + "pt") size:(2*(amax #(bn.height,bn.width))) box:true axistipod:false cross:false centermarker:false wirecolor:green
+			pt.transform = bn.transform
+			pt.parent = bn.parent
+			contro = float_script()
+			rollBones[1].transform.controller[2].controller[1].controller = contro
+			contro.addNode "pt" pt
+			contro.addNode "bn" bn
+			txt = "rot = (bn.transform * inverse pt.transform).rotation as eulerAngles\ndegToRad -rot.x"
 			contro.script = txt
 		)
 		setArrowCursor()
