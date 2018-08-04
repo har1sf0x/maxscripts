@@ -72,7 +72,7 @@ createRigShoulderRollBones bn count:1 --create and rig Shoulder roll bones.
 	nameBonesRollout = rollout nameBonesRollout "Name Bones"
 	(
 		editText edt_CharacterName "Character Name:"
-		dropDownList ddl_BodyPart "Body Part:" items:#("Pelvis", "Spine-Neck-Head", "Leg", "Arm", "Finger") width:120
+		dropDownList ddl_BodyPart "Body Part:" items:#("Pelvis", "Spine-Neck-Head", "Leg", "Reverced Foot", "Arm", "Finger") width:120
 		editText edt_FingerName "Finger Name:" enabled:false across:2
 		checkBox ckb_HasMetacarpus "Has Metacarpus?" enabled:false
 		dropDownList ddl_Side "Side:" items:#("rt", "lt") enabled:false width:50
@@ -80,7 +80,7 @@ createRigShoulderRollBones bn count:1 --create and rig Shoulder roll bones.
 		on ddl_BodyPart selected arg do
 		(
 			edt_FingerName.enabled = ckb_HasMetacarpus.enabled = (ddl_BodyPart.selected == "Finger")
-			ddl_Side.enabled = (ddl_BodyPart.selected == "Leg" or ddl_BodyPart.selected == "Arm" or ddl_BodyPart.selected == "Finger")
+			ddl_Side.enabled = (ddl_BodyPart.selected == "Leg" or ddl_BodyPart.selected == "Reverced Foot" or ddl_BodyPart.selected == "Arm" or ddl_BodyPart.selected == "Finger")
 		)
 		
 		button btn_Rename "Rename..."
@@ -105,7 +105,7 @@ createRigShoulderRollBones bn count:1 --create and rig Shoulder roll bones.
 						setArrowCursor()
 						return false
 					)
-					bonesAr[1].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"Pelvis"+"_"+"_bn"
+					bonesAr[1].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"Pelvis"+"_"+"_DEF_bn"
 					bonesAr[2].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"Pelvis"+"_"+"_nub"
 				)
 				2:
@@ -116,24 +116,40 @@ createRigShoulderRollBones bn count:1 --create and rig Shoulder roll bones.
 						setArrowCursor()
 						return false
 					)
-					for i = 1 to bonesAr.count-3 do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"Spine0"+(i as string)+"_bn"
-					bonesAr[bonesAr.count-2].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"Neck"+"_bn"
-					bonesAr[bonesAr.count-1].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"Head"+"_bn"
+					for i = 1 to bonesAr.count-3 do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"Spine0"+(i as string)+"_DEF_bn"
+					bonesAr[bonesAr.count-2].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"Neck"+"_DEF_bn"
+					bonesAr[bonesAr.count-1].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"Head"+"_DEF_bn"
 					bonesAr[bonesAr.count].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"Head"+"_nub"
 				)
 				3:
 				(
-					if bonesAr.count != 6 do
+					if bonesAr.count != 3 do
 					(
-						messageBox "The v2 Leg needs 6 bones. Action aborted." title:"Warning..."
+						messageBox "The v2 Leg needs 3 bones. Action aborted." title:"Warning..."
 						setArrowCursor()
 						return false
 					)
 					boneNames = #("Thigh", "Knee", "Leg", "Ankle", "Toes", "Toes")
-					for i in #(1, 2, 4, 5) do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_bn"
+					for i in #(1, 2, 4, 5) do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_DEF_bn"
 					for i in #(3, 6) do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_nub"
 				)
 				4:
+				(
+					if bonesAr.count != 6 do
+					(
+						messageBox "The v2 Reversed Foot needs 6 bones. Action aborted." title:"Warning..."
+						setArrowCursor()
+						return false
+					)
+					boneNames = #("Foot0", "Foot0", "Ankle",  "Foot", "Toes", "Toes")
+					indices = #(1,2)
+					for i in indices do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+(i as string)+"_"+ddl_Side.selected+"_HLP_bn"
+					indices = #(3,5)
+					for i in indices do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_DEF_bn"
+					indices = #(4,6)
+					for i in indices do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_nub"
+				)
+				5:
 				(
 					if bonesAr.count != 6 do
 					(
@@ -142,10 +158,10 @@ createRigShoulderRollBones bn count:1 --create and rig Shoulder roll bones.
 						return false
 					)
 					boneNames = #("Clavicle", "Shoulder", "Elbow", "Arm", "Hand", "Hand")
-					for i in #(1, 2, 3, 5) do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_bn"
+					for i in #(1, 2, 3, 5) do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_DEF_bn"
 					for i in #(4, 6) do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_nub"
 				)
-				5:
+				6:
 				(
 					bonesCount = if ckb_HasMetacarpus.checked then 5 else 4
 					if bonesAr.count != bonesCount do
@@ -155,11 +171,11 @@ createRigShoulderRollBones bn count:1 --create and rig Shoulder roll bones.
 						return false
 					)
 					startIndex = if ckb_HasMetacarpus.checked then 0 else 1
-					for i = startIndex to bonesAr.count - 1 do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+edt_FingerName.text+"0"+(i as string)+"_"+ddl_Side.selected+"_bn"
+					for i = startIndex to bonesAr.count - 1 do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+edt_FingerName.text+"0"+(i as string)+"_"+ddl_Side.selected+"_DEF_bn"
 					bonesAr[bonesAr.count].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+edt_FingerName.text+"_"+ddl_Side.selected+"_nub"
 				)
 			)
--- 			bnName = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"put_the_bodyPart_var_here"+"_"+ddl_Side.selected+"_bn"
+-- 			bnName = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"put_the_bodyPart_var_here"+"_"+ddl_Side.selected+"_DEF_bn"
 			setArrowCursor()
 			return true
 		)
@@ -186,7 +202,7 @@ createRigShoulderRollBones bn count:1 --create and rig Shoulder roll bones.
 		(
 			roll = copy bn
 			roll.wirecolor = bn.wirecolor
-			roll.name = (trimright bn.name "bn") + "roll0" + (i as string) + "_bn"
+			roll.name = (trimright bn.name "_DEF_bn") + "roll0" + (i as string) + "_DEF_bn"
 			roll.parent = bn
 			roll.length = (bn.length * 1.0/(count + 1))
 			tm = bn.transform
@@ -243,7 +259,7 @@ createRigShoulderRollBones bn count:1 --create and rig Shoulder roll bones.
 		(
 			roll = copy bn
 			roll.wirecolor = bn.wirecolor
-			roll.name = (trimright bn.name "bn") + "roll0" + (i as string) + "_bn"
+			roll.name = (trimright bn.name "_DEF_bn") + "roll0" + (i as string) + "_DEF_bn"
 			roll.parent = bn
 			roll.length = (bn.length * 1.0/(count + 1))
 			tm = bn.transform
