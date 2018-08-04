@@ -75,7 +75,7 @@ createBoneEnd bn --it creates a boneEnd (nub)
 	nameBonesRollout = rollout nameBonesRollout "Name Bones of v2 Bone Structure"
 	(
 		editText edt_CharacterName "Character Name:"
-		dropDownList ddl_BodyPart "Body Part:" items:#("Pelvis", "Spine-Neck-Head", "Leg", "Reverced Foot", "Arm", "Finger") width:120
+		dropDownList ddl_BodyPart "Body Part:" items:#("Pelvis", "Spine-Neck-Head", "Leg", "Reversed Foot", "Arm", "Finger") width:120
 		editText edt_FingerName "Finger Name:" enabled:false across:2
 		checkBox ckb_HasMetacarpus "Has Metacarpus?" enabled:false
 		dropDownList ddl_Side "Side:" items:#("rt", "lt") enabled:false width:50
@@ -83,7 +83,7 @@ createBoneEnd bn --it creates a boneEnd (nub)
 		on ddl_BodyPart selected arg do
 		(
 			edt_FingerName.enabled = ckb_HasMetacarpus.enabled = (ddl_BodyPart.selected == "Finger")
-			ddl_Side.enabled = (ddl_BodyPart.selected == "Leg" or ddl_BodyPart.selected == "Reverced Foot" or ddl_BodyPart.selected == "Arm" or ddl_BodyPart.selected == "Finger")
+			ddl_Side.enabled = (ddl_BodyPart.selected == "Leg" or ddl_BodyPart.selected == "Reversed Foot" or ddl_BodyPart.selected == "Arm" or ddl_BodyPart.selected == "Finger")
 		)
 		
 		button btn_Rename "Rename Selection"
