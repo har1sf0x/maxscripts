@@ -75,9 +75,12 @@ createBoneEnd bn --it creates a boneEnd (nub)
 	nameBonesRollout = rollout nameBonesRollout "Name Bones of v2 Bone Structure"
 	(
 		editText edt_CharacterName "Character Name:"
-		dropDownList ddl_BodyPart "Body Part:" items:#("Pelvis", "Spine-Neck-Head", "Leg", "Reversed Foot", "Arm", "Finger") width:120
-		editText edt_FingerName "Finger Name:" enabled:false across:2
-		checkBox ckb_HasMetacarpus "Has Metacarpus?" enabled:false
+		dropDownList ddl_BodyPart "Body Part:" items:#("Pelvis", "Spine-Neck-Head", "Leg", "Reversed Foot", "Arm", "Finger") --width:120
+		group "Finger"
+		(
+			editText edt_FingerName "Finger Name:" enabled:false --across:2
+			checkBox ckb_HasMetacarpus "Has Metacarpus?" enabled:false
+		)
 		dropDownList ddl_Side "Side:" items:#("rt", "lt") enabled:false width:50
 		
 		on ddl_BodyPart selected arg do
@@ -209,8 +212,8 @@ createBoneEnd bn --it creates a boneEnd (nub)
 
 	fn UI_NameBones =
 	(
-		try(closeRolloutFloater this.name_RenameRF)catch()
-		name_RenameRF = newRolloutFloater "Name/Rename v2 Bone Structure" 500 500
+		try(closeRolloutFloater name_RenameRF)catch()
+		name_RenameRF = newRolloutFloater "Name/Rename v2 Bone Structure" 300 500
 		addRollout nameBonesRollout name_RenameRF
 		addRollout findReplaceNameRollout name_RenameRF
 -- 		try(destroyDialog nameBonesRollout)catch()
