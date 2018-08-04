@@ -8,11 +8,14 @@ contains usefull functions for various purposes
 info --prints info about the struct
 insertItemsToIndex originalAr insAr toIndex --helper fn for .net ListBox (toIndex is 0-based)
 exportSelectedNodesToObj suffix:'' --it exports all selected nodes to different .obj files addind suffix
-nameBonesRollout --rollout for UI_NameBones
-UI_NameBones --UI for renaming bones of human character (Pelvis,Spine0...-Neck-Head-nub,Clavicle-Shoulder-Elbow-nub,Thigh-Knee-Ankle-Toes)
+nameBonesRollout --rollout for naming v2 human character (Pelvis,Spine0...-Neck-Head-nub,Clavicle-Shoulder-Elbow-nub-Hand-nub,Thigh-Knee-Ankle-Toes)
+findReplaceNameRollout --rollout for replacing with string in selection.name
+name_RenameRF --var for containing name_RenameRF rolloutFloater
+UI_NameBones --fn for setting name_RenameRF and adding nameBonesRollout and findReplaceNameRollout
 createRigForearmRollBones sel count:2 --create and rig Forearm roll bones. sel must be #(forearm, hand)
 runCreateRigForearmRollBones count:2 --an other way to createRigForearmRollBones by picking object on site
 createRigShoulderRollBones bn count:1 --create and rig Shoulder roll bones.
+createBoneEnd bn --it creates a boneEnd (nub)
 "
 	print txt
 	),
@@ -69,7 +72,7 @@ createRigShoulderRollBones bn count:1 --create and rig Shoulder roll bones.
 		messageBox "Operation Completed" title:"Success"
 	),
 
-	nameBonesRollout = rollout nameBonesRollout "Name Bones"
+	nameBonesRollout = rollout nameBonesRollout "Name Bones of v2 Bone Structure"
 	(
 		editText edt_CharacterName "Character Name:"
 		dropDownList ddl_BodyPart "Body Part:" items:#("Pelvis", "Spine-Neck-Head", "Leg", "Reverced Foot", "Arm", "Finger") width:120
@@ -83,7 +86,7 @@ createRigShoulderRollBones bn count:1 --create and rig Shoulder roll bones.
 			ddl_Side.enabled = (ddl_BodyPart.selected == "Leg" or ddl_BodyPart.selected == "Reverced Foot" or ddl_BodyPart.selected == "Arm" or ddl_BodyPart.selected == "Finger")
 		)
 		
-		button btn_Rename "Rename..."
+		button btn_Rename "Rename Selection"
 
 		on btn_Rename pressed do
 		(
@@ -123,15 +126,15 @@ createRigShoulderRollBones bn count:1 --create and rig Shoulder roll bones.
 				)
 				3:
 				(
-					if bonesAr.count != 3 do
+					if bonesAr.count != 5 do
 					(
-						messageBox "The v2 Leg needs 3 bones. Action aborted." title:"Warning..."
+						messageBox "The v2 Leg needs 5 bones. Action aborted." title:"Warning..."
 						setArrowCursor()
 						return false
 					)
-					boneNames = #("Thigh", "Knee", "Leg", "Ankle", "Toes", "Toes")
-					for i in #(1, 2, 4, 5) do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_DEF_bn"
-					for i in #(3, 6) do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_nub"
+					boneNames = #("Thigh", "Knee", "Ankle", "Toes", "Toes")
+					for i in #(1, 2, 3, 4) do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_DEF_bn"
+					for i in #(5) do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_nub"
 				)
 				4:
 				(
@@ -181,10 +184,37 @@ createRigShoulderRollBones bn count:1 --create and rig Shoulder roll bones.
 		)
 	),
 
+	findReplaceNameRollout = rollout findReplaceNameRollout "Find/Replace selection.name"
+	(
+		editText edt_SearchFor "Search for:"
+		editText edt_ReplaceWith "Replace With:"
+		button btn_Replace "Replace Selection"
+		
+		on btn_Replace pressed do
+		(
+			if edt_SearchFor.text != "" and edt_ReplaceWith.text != "" and selection.count != 0 do
+			(
+				for o in selection do
+				(
+					index = findString o.name edt_SearchFor.text
+					if index != undefined do
+					(
+						o.name = replace o.name index edt_SearchFor.text.count edt_ReplaceWith.text
+					)
+				)
+			)
+		)
+	),
+	name_RenameRF = undefined,
+
 	fn UI_NameBones =
 	(
-		try(destroyDialog nameBonesRollout)catch()
-		createDialog nameBonesRollout width:500
+		try(closeRolloutFloater this.name_RenameRF)catch()
+		name_RenameRF = newRolloutFloater "Name/Rename v2 Bone Structure" 500 500
+		addRollout nameBonesRollout name_RenameRF
+		addRollout findReplaceNameRollout name_RenameRF
+-- 		try(destroyDialog nameBonesRollout)catch()
+-- 		createDialog nameBonesRollout width:500
 	),
 
 	fn createRigForearmRollBones sel count:2 =
@@ -286,6 +316,21 @@ createRigShoulderRollBones bn count:1 --create and rig Shoulder roll bones.
 			contro.script = txt
 		)
 		setArrowCursor()
+		return true
+	),
+
+	fn createBoneEnd bn =
+	(
+		if classof bn != BoneGeometry do
+		(
+			print ("WARNING: The createBoneEnd aborted. " + bn.name + " was not a BoneGeometry. Please pass a bone next time...")
+			return false
+		)
+		result = (BoneSys.createBone (bn.pos + bn.length * bn.transform.row1) (bn.pos + (bn.length + (amin #(bn.height, bn.width))) * bn.transform.row1) bn.transform.row3)
+		result.parent = bn
+		result.name = (trimright bn.name "bn") + "nub"
+		result.width = result.height = result.length
+		if har1sf0x != undefined then har1sf0x.riggingTools.resetStretch result else displayTempPrompt "The end bone might be stretched..." 3000
 		return true
 	)
 )
