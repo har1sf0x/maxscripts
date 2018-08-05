@@ -384,4 +384,4 @@ createBoneEnd bn --it creates a boneEnd (nub)
 			true
 		)
 	)
-)
+)--end struct functions
