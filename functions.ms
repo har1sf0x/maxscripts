@@ -9,6 +9,7 @@ info --prints info about the struct
 insertItemsToIndex originalAr insAr toIndex --helper fn for .net ListBox (toIndex is 0-based)
 exportSelectedNodesToObj suffix:'' --it exports all selected nodes to different .obj files addind suffix
 nameBonesRollout --rollout for naming v2 human character (Pelvis,Spine0...-Neck-Head-nub,Clavicle-Shoulder-Elbow-nub-Hand-nub,Thigh-Knee-Ankle-Toes)
+findReplaceText searchFor replaceWith &result --it modifies result by changing the searchFor text with the replaceWith text
 findReplaceNameRollout --rollout for replacing with string in selection.name
 name_RenameRF --var for containing name_RenameRF rolloutFloater
 UI_NameBones --fn for setting name_RenameRF and adding nameBonesRollout and findReplaceNameRollout
@@ -187,6 +188,21 @@ createBoneEnd bn --it creates a boneEnd (nub)
 		)
 	),
 
+	fn findReplaceText searchFor replaceWith &result =
+	(
+		if classof searchFor and classof replaceWith and classof result != string do
+		(
+			format "error: findReplaceText % % %" searchFor replaceWith result
+			return false
+		)
+		index = findString result searchFor
+		if index != undefined do
+		(
+			result = replace result index searchFor.count replaceWith
+		)
+		return true
+	),
+
 	findReplaceNameRollout = rollout findReplaceNameRollout "Find/Replace selection.name"
 	(
 		editText edt_SearchFor "Search for:"
@@ -197,14 +213,12 @@ createBoneEnd bn --it creates a boneEnd (nub)
 		(
 			if edt_SearchFor.text != "" and edt_ReplaceWith.text != "" and selection.count != 0 do
 			(
+				setWaitCursor()
 				for o in selection do
 				(
-					index = findString o.name edt_SearchFor.text
-					if index != undefined do
-					(
-						o.name = replace o.name index edt_SearchFor.text.count edt_ReplaceWith.text
-					)
+					findReplaceText edt_SearchFor.text edt_ReplaceWith.text &o.name
 				)
+				setArrowCursor()
 			)
 		)
 	),
