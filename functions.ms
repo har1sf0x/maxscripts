@@ -275,7 +275,7 @@ createBoneEnd bn --it creates a boneEnd (nub)
 			for i = 1 to count do
 			(
 				roll = copy bn
-				roll.wirecolor = bn.wirecolor
+				roll.wirecolor = red --bn.wirecolor
 				roll.name = (trimright bn.name "_DEF_bn") + "roll0" + (i as string) + "_DEF_bn"
 				roll.parent = bn
 				roll.length = (bn.length * 1.0/(count + 1))
@@ -336,7 +336,7 @@ createBoneEnd bn --it creates a boneEnd (nub)
 			for i = 1 to count do
 			(
 				roll = copy bn
-				roll.wirecolor = bn.wirecolor
+				roll.wirecolor = red --bn.wirecolor
 				roll.name = (trimright bn.name "_DEF_bn") + "roll0" + (i as string) + "_DEF_bn"
 				roll.parent = bn
 				roll.length = (bn.length * 1.0/(count + 1))
