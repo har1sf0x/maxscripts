@@ -51,7 +51,7 @@ createBoneEnd bn --it creates a boneEnd (nub)
 	  		)
 	  	)
 	  	setArrowCursor()
-	  	return result
+	  	result
 	),
 
 	fn exportSelectedNodesToObj suffix:"" =
@@ -95,112 +95,138 @@ createBoneEnd bn --it creates a boneEnd (nub)
 		on btn_Rename pressed do
 		(
 			setWaitCursor()
-			if selection.count == 0 do
+			if selection.count == 0 then
 			(
 				messageBox "Please select the bone chain that you want to rename." title:"Warning..."
 				setArrowCursor()
-				return false
-			)
-			bonesAr = selection as array
-			case ddl_BodyPart.selection of
+				false
+			) else
 			(
-				1:
+				bonesAr = selection as array
+				case ddl_BodyPart.selection of
 				(
-					if bonesAr.count != 2 do
+					1:
 					(
-						messageBox "The v2 Pelvis needs 2 bones. Action aborted." title:"Warning..."
-						setArrowCursor()
-						return false
+						if bonesAr.count != 2 then
+						(
+							messageBox "The v2 Pelvis needs 2 bones. Action aborted." title:"Warning..."
+							setArrowCursor()
+							false
+						) else
+						(
+							bonesAr[1].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"Pelvis"+"_"+"_DEF_bn"
+							bonesAr[2].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"Pelvis"+"_"+"_nub"
+							setArrowCursor()
+							true
+						)
 					)
-					bonesAr[1].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"Pelvis"+"_"+"_DEF_bn"
-					bonesAr[2].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"Pelvis"+"_"+"_nub"
-				)
-				2:
-				(
-					if bonesAr.count < 4 do
+					2:
 					(
-						messageBox "The v2 Spine needs at least 4 bones. Action aborted." title:"Warning..."
-						setArrowCursor()
-						return false
+						if bonesAr.count < 4 then
+						(
+							messageBox "The v2 Spine needs at least 4 bones. Action aborted." title:"Warning..."
+							setArrowCursor()
+							false
+						) else
+						(
+							for i = 1 to bonesAr.count-3 do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"Spine0"+(i as string)+"_DEF_bn"
+							bonesAr[bonesAr.count-2].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"Neck"+"_DEF_bn"
+							bonesAr[bonesAr.count-1].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"Head"+"_DEF_bn"
+							bonesAr[bonesAr.count].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"Head"+"_nub"
+							setArrowCursor()
+							true
+						)
 					)
-					for i = 1 to bonesAr.count-3 do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"Spine0"+(i as string)+"_DEF_bn"
-					bonesAr[bonesAr.count-2].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"Neck"+"_DEF_bn"
-					bonesAr[bonesAr.count-1].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"Head"+"_DEF_bn"
-					bonesAr[bonesAr.count].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"Head"+"_nub"
-				)
-				3:
-				(
-					if bonesAr.count != 5 do
+					3:
 					(
-						messageBox "The v2 Leg needs 5 bones. Action aborted." title:"Warning..."
-						setArrowCursor()
-						return false
+						if bonesAr.count != 5 then
+						(
+							messageBox "The v2 Leg needs 5 bones. Action aborted." title:"Warning..."
+							setArrowCursor()
+							false
+						) else
+						(
+							boneNames = #("Thigh", "Knee", "Ankle", "Toes", "Toes")
+							for i in #(1, 2, 3, 4) do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_DEF_bn"
+							for i in #(5) do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_nub"
+							setArrowCursor()
+							true
+						)
 					)
-					boneNames = #("Thigh", "Knee", "Ankle", "Toes", "Toes")
-					for i in #(1, 2, 3, 4) do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_DEF_bn"
-					for i in #(5) do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_nub"
-				)
-				4:
-				(
-					if bonesAr.count != 6 do
+					4:
 					(
-						messageBox "The v2 Reversed Foot needs 6 bones. Action aborted." title:"Warning..."
-						setArrowCursor()
-						return false
+						if bonesAr.count != 6 then
+						(
+							messageBox "The v2 Reversed Foot needs 6 bones. Action aborted." title:"Warning..."
+							setArrowCursor()
+							false
+						) else
+						(
+							boneNames = #("Foot0", "Foot0", "Ankle",  "Foot", "Toes", "Toes")
+							indices = #(1,2)
+							for i in indices do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+(i as string)+"_"+ddl_Side.selected+"_HLP_bn"
+							indices = #(3,5)
+							for i in indices do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_DEF_bn"
+							indices = #(4,6)
+							for i in indices do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_nub"
+							setArrowCursor()
+							true
+						)
 					)
-					boneNames = #("Foot0", "Foot0", "Ankle",  "Foot", "Toes", "Toes")
-					indices = #(1,2)
-					for i in indices do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+(i as string)+"_"+ddl_Side.selected+"_HLP_bn"
-					indices = #(3,5)
-					for i in indices do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_DEF_bn"
-					indices = #(4,6)
-					for i in indices do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_nub"
-				)
-				5:
-				(
-					if bonesAr.count != 6 do
+					5:
 					(
-						messageBox "The v2 Arm needs 6 bones. Action aborted." title:"Warning..."
-						setArrowCursor()
-						return false
+						if bonesAr.count != 6 then
+						(
+							messageBox "The v2 Arm needs 6 bones. Action aborted." title:"Warning..."
+							setArrowCursor()
+							false
+						) else
+						(
+							boneNames = #("Clavicle", "Shoulder", "Elbow", "Arm", "Hand", "Hand")
+							for i in #(1, 2, 3, 5) do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_DEF_bn"
+							for i in #(4, 6) do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_nub"
+							setArrowCursor()
+							true
+						)
 					)
-					boneNames = #("Clavicle", "Shoulder", "Elbow", "Arm", "Hand", "Hand")
-					for i in #(1, 2, 3, 5) do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_DEF_bn"
-					for i in #(4, 6) do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_nub"
-				)
-				6:
-				(
-					bonesCount = if ckb_HasMetacarpus.checked then 5 else 4
-					if bonesAr.count != bonesCount do
+					6:
 					(
-						messageBox ("The finger needs " + (bonesCount as string) + " bones. Action aborted.") title:"Warning..."
-						setArrowCursor()
-						return false
+						bonesCount = if ckb_HasMetacarpus.checked then 5 else 4
+						if bonesAr.count != bonesCount then
+						(
+							messageBox ("The finger needs " + (bonesCount as string) + " bones. Action aborted.") title:"Warning..."
+							setArrowCursor()
+							false
+						) else
+						(
+							startIndex = if ckb_HasMetacarpus.checked then 0 else 1
+							for i = startIndex to bonesAr.count - 1 do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+edt_FingerName.text+"0"+(i as string)+"_"+ddl_Side.selected+"_DEF_bn"
+							bonesAr[bonesAr.count].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+edt_FingerName.text+"_"+ddl_Side.selected+"_nub"
+							setArrowCursor()
+							true
+						)
 					)
-					startIndex = if ckb_HasMetacarpus.checked then 0 else 1
-					for i = startIndex to bonesAr.count - 1 do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+edt_FingerName.text+"0"+(i as string)+"_"+ddl_Side.selected+"_DEF_bn"
-					bonesAr[bonesAr.count].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+edt_FingerName.text+"_"+ddl_Side.selected+"_nub"
 				)
+				--bnName = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"put_the_bodyPart_var_here"+"_"+ddl_Side.selected+"_DEF_bn"
 			)
--- 			bnName = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+"put_the_bodyPart_var_here"+"_"+ddl_Side.selected+"_DEF_bn"
-			setArrowCursor()
-			return true
 		)
 	),
 
 	fn findReplaceText searchFor replaceWith &result =
 	(
-		if classof searchFor and classof replaceWith and classof result != string do
+		if classof searchFor and classof replaceWith and classof result != string then
 		(
 			format "error: findReplaceText % % %" searchFor replaceWith result
-			return false
-		)
-		index = findString result searchFor
-		if index != undefined do
+			false
+		) else
 		(
-			result = replace result index searchFor.count replaceWith
+			index = findString result searchFor
+			if index != undefined do
+			(
+				result = replace result index searchFor.count replaceWith
+			)
+			true
 		)
-		return true
 	),
 
 	findReplaceNameRollout = rollout findReplaceNameRollout "Find/Replace selection.name"
@@ -236,118 +262,126 @@ createBoneEnd bn --it creates a boneEnd (nub)
 
 	fn createRigForearmRollBones sel count:2 =
 	(
-		if classof sel != array or sel.count != 2 or classof sel[1] != BoneGeometry or classof sel[2] != BoneGeometry do
+		if classof sel != array or sel.count != 2 or classof sel[1] != BoneGeometry or classof sel[2] != BoneGeometry then
 		(
 			messageBox "Please pass an array of type #(forearm, hand). Action aborted." title:"Warning..."
-			return false
-		)
-		setWaitCursor()
-		bn = sel[1]
-		hand = sel[2]
-		rollBones = #()
-		for i = 1 to count do
+			false
+		) else
 		(
-			roll = copy bn
-			roll.wirecolor = bn.wirecolor
-			roll.name = (trimright bn.name "_DEF_bn") + "roll0" + (i as string) + "_DEF_bn"
-			roll.parent = bn
-			roll.length = (bn.length * 1.0/(count + 1))
-			tm = bn.transform
-			tm.position = bn.pos + (i * roll.length) * bn.transform.row1
-			roll.transform = tm
-			append rollBones roll
+			setWaitCursor()
+			bn = sel[1]
+			hand = sel[2]
+			rollBones = #()
+			for i = 1 to count do
+			(
+				roll = copy bn
+				roll.wirecolor = bn.wirecolor
+				roll.name = (trimright bn.name "_DEF_bn") + "roll0" + (i as string) + "_DEF_bn"
+				roll.parent = bn
+				roll.length = (bn.length * 1.0/(count + 1))
+				tm = bn.transform
+				tm.position = bn.pos + (i * roll.length) * bn.transform.row1
+				roll.transform = tm
+				append rollBones roll
+			)
+			for i = 1 to (count - 1) do
+			(
+				contro = orientation_constraint()
+				rollBones[i].transform.controller[2].controller = contro
+				contro.appendTarget bn (100*(1.0 - (i*(1.0/count))))
+				contro.appendTarget rollBones[count] (100*i*(1.0/count))
+			)
+			(
+				contro = lookAt_constraint()
+				rollBones[count].transform.controller[2].controller = contro
+				contro.lookat_vector_length = 0.0
+				contro.appendTarget bn 1.0
+				contro.target_axis = 0
+				contro.target_axisFlip = true
+				contro.pickUpNode = hand
+				contro.upnode_world = false
+				contro.StoUP_axis = 1
+				contro.upnode_axis = 1
+			)
+			setArrowCursor()
+			true
 		)
-		for i = 1 to (count - 1) do
-		(
-			contro = orientation_constraint()
-			rollBones[i].transform.controller[2].controller = contro
-			contro.appendTarget bn (100*(1.0 - (i*(1.0/count))))
-			contro.appendTarget rollBones[count] (100*i*(1.0/count))
-		)
-		(
-			contro = lookAt_constraint()
-			rollBones[count].transform.controller[2].controller = contro
-			contro.lookat_vector_length = 0.0
-			contro.appendTarget bn 1.0
-			contro.target_axis = 0
-			contro.target_axisFlip = true
-			contro.pickUpNode = hand
-			contro.upnode_world = false
-			contro.StoUP_axis = 1
-			contro.upnode_axis = 1
-		)
-		setArrowCursor()
-		return true
 	),
 
 	fn runCreateRigForearmRollBones count:2 =
 	(
 		fn pickBone o = (classof o == BoneGeometry)
 		sel = pickObject message:"Please pick the forearm and the hand." filter:pickBone count:2
-		if sel == array or sel.count != 2 do
+		if sel == array or sel.count != 2 then
 		(
 			messageBox "Please pick the forearm and the hand. Action aborted." title:"Warning..."
-			return false
+			false
+		) else
+		(
+			createRigForearmRollBones sel count:count
+			true
 		)
-		createRigForearmRollBones sel count:count
-		return true
 	),
 
 	fn createRigShoulderRollBones bn count:1 =
 	(
-		if classof bn != BoneGeometry or bn.parent == undefined do
+		if classof bn != BoneGeometry or bn.parent == undefined then
 		(
 			messageBox "Please pass the shoulder bone. Action aborted." title:"Warning..."
-			return false
-		)
-		setWaitCursor()
-		rollBones = #()
-		for i = 1 to count do
+			false
+		) else
 		(
-			roll = copy bn
-			roll.wirecolor = bn.wirecolor
-			roll.name = (trimright bn.name "_DEF_bn") + "roll0" + (i as string) + "_DEF_bn"
-			roll.parent = bn
-			roll.length = (bn.length * 1.0/(count + 1))
-			tm = bn.transform
-			tm.position = bn.pos + ((i-1) * roll.length) * bn.transform.row1
-			roll.transform = tm
-			append rollBones roll
+			setWaitCursor()
+			rollBones = #()
+			for i = 1 to count do
+			(
+				roll = copy bn
+				roll.wirecolor = bn.wirecolor
+				roll.name = (trimright bn.name "_DEF_bn") + "roll0" + (i as string) + "_DEF_bn"
+				roll.parent = bn
+				roll.length = (bn.length * 1.0/(count + 1))
+				tm = bn.transform
+				tm.position = bn.pos + ((i-1) * roll.length) * bn.transform.row1
+				roll.transform = tm
+				append rollBones roll
+			)
+			for i = 2 to count do
+			(
+				contro = orientation_constraint()
+				rollBones[i].transform.controller[2].controller = contro
+				contro.appendTarget rollBones[1] (100*(1.0 - (i-1)*(1.0/count)))
+				contro.appendTarget bn (100*(i-1)*(1.0/count))
+			)
+			(
+				pt = point name:((trimright bn.name "bn") + "pt") size:(2*(amax #(bn.height,bn.width))) box:true axistipod:false cross:false centermarker:false wirecolor:green
+				pt.transform = bn.transform
+				pt.parent = bn.parent
+				contro = float_script()
+				rollBones[1].transform.controller[2].controller[1].controller = contro
+				contro.addNode "pt" pt
+				contro.addNode "bn" bn
+				txt = "rot = (bn.transform * inverse pt.transform).rotation as eulerAngles\ndegToRad -rot.x"
+				contro.script = txt
+			)
+			setArrowCursor()
+			true
 		)
-		for i = 2 to count do
-		(
-			contro = orientation_constraint()
-			rollBones[i].transform.controller[2].controller = contro
-			contro.appendTarget rollBones[1] (100*(1.0 - (i-1)*(1.0/count)))
-			contro.appendTarget bn (100*(i-1)*(1.0/count))
-		)
-		(
-			pt = point name:((trimright bn.name "bn") + "pt") size:(2*(amax #(bn.height,bn.width))) box:true axistipod:false cross:false centermarker:false wirecolor:green
-			pt.transform = bn.transform
-			pt.parent = bn.parent
-			contro = float_script()
-			rollBones[1].transform.controller[2].controller[1].controller = contro
-			contro.addNode "pt" pt
-			contro.addNode "bn" bn
-			txt = "rot = (bn.transform * inverse pt.transform).rotation as eulerAngles\ndegToRad -rot.x"
-			contro.script = txt
-		)
-		setArrowCursor()
-		return true
 	),
 
 	fn createBoneEnd bn =
 	(
-		if classof bn != BoneGeometry do
+		if classof bn != BoneGeometry then
 		(
-			print ("WARNING: The createBoneEnd aborted. " + bn.name + " was not a BoneGeometry. Please pass a bone next time...")
-			return false
+			format "WARNING: The createBoneEnd aborted. % was not a BoneGeometry. Please pass a bone next time..." bn.name
+			false
+		) else
+		(
+			result = (BoneSys.createBone (bn.pos + bn.length * bn.transform.row1) (bn.pos + (bn.length + (amin #(bn.height, bn.width))) * bn.transform.row1) bn.transform.row3)
+			result.parent = bn
+			result.name = (trimright bn.name "bn") + "nub"
+			result.width = result.height = result.length
+			if har1sf0x != undefined then har1sf0x.riggingTools.resetStretch result else displayTempPrompt "The end bone might be stretched..." 3000
+			true
 		)
-		result = (BoneSys.createBone (bn.pos + bn.length * bn.transform.row1) (bn.pos + (bn.length + (amin #(bn.height, bn.width))) * bn.transform.row1) bn.transform.row3)
-		result.parent = bn
-		result.name = (trimright bn.name "bn") + "nub"
-		result.width = result.height = result.length
-		if har1sf0x != undefined then har1sf0x.riggingTools.resetStretch result else displayTempPrompt "The end bone might be stretched..." 3000
-		return true
 	)
 )
