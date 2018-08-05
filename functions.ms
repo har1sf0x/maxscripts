@@ -214,7 +214,7 @@ createBoneEnd bn --it creates a boneEnd (nub)
 
 	fn findReplaceText searchFor replaceWith &result =
 	(
-		if classof searchFor and classof replaceWith and classof result != string then
+		if classof searchFor != string and classof replaceWith != string and classof result != string then
 		(
 			format "error: findReplaceText % % %" searchFor replaceWith result
 			false
@@ -242,7 +242,7 @@ createBoneEnd bn --it creates a boneEnd (nub)
 				setWaitCursor()
 				for o in selection do
 				(
-					findReplaceText edt_SearchFor.text edt_ReplaceWith.text &o.name
+					functions.findReplaceText edt_SearchFor.text edt_ReplaceWith.text &o.name
 				)
 				setArrowCursor()
 			)
