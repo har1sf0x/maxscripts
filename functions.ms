@@ -147,8 +147,8 @@ createBoneEnd bn --it creates a boneEnd (nub)
 						) else
 						(
 							boneNames = #("Thigh", "Knee", "Ankle", "Toes", "Toes")
-							for i in #(1, 2, 3, 4) do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_DEF_bn"
-							for i in #(5) do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_nub"
+							for i in #(1, 2, 3, 4) do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+ddl_Side.selected+"_"+boneNames[i]+"_DEF_bn"
+							for i in #(5) do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+ddl_Side.selected+"_"+boneNames[i]+"_nub"
 							setArrowCursor()
 							true
 						)
@@ -164,11 +164,11 @@ createBoneEnd bn --it creates a boneEnd (nub)
 						(
 							boneNames = #("Foot0", "Foot0", "Ankle",  "Foot", "Toes", "Toes")
 							indices = #(1,2)
-							for i in indices do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+(i as string)+"_"+ddl_Side.selected+"_HLP_bn"
+							for i in indices do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+ddl_Side.selected+"_"+boneNames[i]+(i as string)+"_HLP_bn"
 							indices = #(3,5)
-							for i in indices do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_DEF_bn"
+							for i in indices do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+ddl_Side.selected+"_"+boneNames[i]+"_DEF_bn"
 							indices = #(4,6)
-							for i in indices do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_nub"
+							for i in indices do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+ddl_Side.selected+"_"+boneNames[i]+"_nub"
 							setArrowCursor()
 							true
 						)
@@ -183,8 +183,8 @@ createBoneEnd bn --it creates a boneEnd (nub)
 						) else
 						(
 							boneNames = #("Clavicle", "Shoulder", "Elbow", "Arm", "Hand", "Hand")
-							for i in #(1, 2, 3, 5) do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_DEF_bn"
-							for i in #(4, 6) do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+boneNames[i]+"_"+ddl_Side.selected+"_nub"
+							for i in #(1, 2, 3, 5) do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+ddl_Side.selected+"_"+boneNames[i]+"_DEF_bn"
+							for i in #(4, 6) do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+ddl_Side.selected+"_"+boneNames[i]+"_nub"
 							setArrowCursor()
 							true
 						)
@@ -200,8 +200,8 @@ createBoneEnd bn --it creates a boneEnd (nub)
 						) else
 						(
 							startIndex = if ckb_HasMetacarpus.checked then 0 else 1
-							for i = startIndex to bonesAr.count - 1 do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+edt_FingerName.text+"0"+(i as string)+"_"+ddl_Side.selected+"_DEF_bn"
-							bonesAr[bonesAr.count].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+edt_FingerName.text+"_"+ddl_Side.selected+"_nub"
+							for i = startIndex to bonesAr.count - 1 do bonesAr[i].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+ddl_Side.selected+"_"+edt_FingerName.text+"0"+(i as string)+"_DEF_bn"
+							bonesAr[bonesAr.count].name = (if edt_CharacterName.text != "" then (edt_CharacterName.text + "::") else "")+ddl_Side.selected+"_"+edt_FingerName.text+"_nub"
 							setArrowCursor()
 							true
 						)
