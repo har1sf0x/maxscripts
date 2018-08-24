@@ -397,14 +397,19 @@ cWOSVFBTB skinMod fromBn toBN: --alias of copyWeightsOfSelectedVerticesFromBoneT
 				append boneNames (skinOps.GetBoneName skinMod i 0 )
 			)
 		)
--- 		print boneNames
 		if boneNames.count != 0 and (fromIndex = findItem boneNames fromBn) != 0 and (toIndex = findItem boneNames toBn) != 0 then
 		(
 			for i = 1 to skinOps.GetNumberVertices() skinMod where (skinOps.IsVertexSelected skinMod i) == 1 do
 			(
-				weight = skinOps.GetVertexWeight skinMod i fromIndex
-				skinOps.SetVertexWeights skinMod i fromIndex 0
-				skinOps.SetVertexWeights skinMod i toIndex weight
+
+				for bnIndex = 1 to skinOps.GetVertexWeightCount skinMod i where (skinOps.GetVertexWeightBoneID skinMod i bnIndex) == (bnID = skinOps.GetBoneIDByListID skinMod fromIndex) do
+				(
+					weight = skinOps.GetVertexWeight skinMod bnIndex
+					if weight == undefined do weight = 0.0
+					skinOps.SetVertexWeights skinMod i fromIndex 0.0
+					skinOps.RemoveZeroWeights skinMod
+					skinOps.SetVertexWeights skinMod i toIndex weight
+				)
 			)
 			skinOps.RemoveZeroWeights skinMod
 			print "Done"
