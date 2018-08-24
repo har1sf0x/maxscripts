@@ -389,17 +389,18 @@ cWOSVFBTB skinMod fromBn toBN: --alias of copyWeightsOfSelectedVerticesFromBoneT
 
 	fn copyWeightsOfSelectedVerticesFromBoneToBone skinMod fromBn toBN =
 	(
-		boneNames = []
-		if classof skinMod != skin do
+		boneNames = #()
+		if classof skinMod == skin do
 		(
 			for i = 1 to skinOps.GetNumberBones skinMod do
 			(
 				append boneNames (skinOps.GetBoneName skinMod i 0 )
 			)
 		)
-		if boneNames.count != 0 and (fromIndex = findItem boneNames fromBn) != 0 and (toIndex = findItem boneNames fromBn) != 0 do
+-- 		print boneNames
+		if boneNames.count != 0 and (fromIndex = findItem boneNames fromBn) != 0 and (toIndex = findItem boneNames toBn) != 0 then
 		(
-			for i = 1 to skinOps.GetNumberVertices skinMod where skinOps.IsVertexSelected skinMod i do
+			for i = 1 to skinOps.GetNumberVertices() skinMod where (skinOps.IsVertexSelected skinMod i) == 1 do
 			(
 				weight = skinOps.GetVertexWeight skinMod i fromIndex
 				skinOps.SetVertexWeights skinMod i fromIndex 0
@@ -410,11 +411,11 @@ cWOSVFBTB skinMod fromBn toBN: --alias of copyWeightsOfSelectedVerticesFromBoneT
 		) else
 		(
 			print "Failed"
-		),
-
-		fn cWOSVFBTB skinMod fromBn toBN =
-		(
-			copyWeightsOfSelectedVerticesFromBoneToBone skinMod fromBn toBN
 		)
+	),
+
+	fn cWOSVFBTB skinMod fromBn toBN =
+	(
+		copyWeightsOfSelectedVerticesFromBoneToBone skinMod fromBn toBN
 	)
 )--end struct functions
