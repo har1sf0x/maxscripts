@@ -17,6 +17,8 @@ createRigForearmRollBones sel count:2 --create and rig Forearm roll bones. sel m
 runCreateRigForearmRollBones count:2 --an other way to createRigForearmRollBones by picking object on site
 createRigShoulderRollBones bn count:1 --create and rig Shoulder roll bones.
 createBoneEnd bn --it creates a boneEnd (nub)
+copyWeightsOfSelectedVerticesFromBoneToBone skinMod fromBn toBN: --copy skin weights of selected vertices from one bone to another
+cWOSVFBTB skinMod fromBn toBN: --alias of copyWeightsOfSelectedVerticesFromBoneToBone
 "
 	print txt
 	),
@@ -382,6 +384,37 @@ createBoneEnd bn --it creates a boneEnd (nub)
 			result.width = result.height = result.length
 			if har1sf0x != undefined then har1sf0x.riggingTools.resetStretch result else displayTempPrompt "The end bone might be stretched..." 3000
 			true
+		)
+	),
+
+	fn copyWeightsOfSelectedVerticesFromBoneToBone skinMod fromBn toBN =
+	(
+		boneNames = []
+		if classof skinMod != skin do
+		(
+			for i = 1 to skinOps.GetNumberBones skinMod do
+			(
+				append boneNames (skinOps.GetBoneName skinMod i 0 )
+			)
+		)
+		if boneNames.count != 0 and (fromIndex = findItem boneNames fromBn) != 0 and (toIndex = findItem boneNames fromBn) != 0 do
+		(
+			for i = 1 to skinOps.GetNumberVertices skinMod where skinOps.IsVertexSelected skinMod i do
+			(
+				weight = skinOps.GetVertexWeight skinMod i fromIndex
+				skinOps.SetVertexWeights skinMod i fromIndex 0
+				skinOps.SetVertexWeights skinMod i toIndex weight
+			)
+			skinOps.RemoveZeroWeights skinMod
+			print "Done"
+		) else
+		(
+			print "Failed"
+		),
+
+		fn cWOSVFBTB skinMod fromBn toBN =
+		(
+			copyWeightsOfSelectedVerticesFromBoneToBone skinMod fromBn toBN
 		)
 	)
 )--end struct functions
